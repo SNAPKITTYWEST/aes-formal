@@ -20,7 +20,7 @@ Every conjecture is explicitly marked **UNPROVEN**. No claims beyond what the ma
 |-------|-------------|--------|-----|------|----------|------|--------|
 | **2** | GF(2^8) field (quotient, Frobenius, x^254 = x^-1) | Done | Done | Done | Done | Done | Done |
 | **3** | S-box polynomial (full affine transform, FIPS-197) | Done | Done | Done | Done | Done | Done |
-| **4** | Linear layer (MDS, branch number = 5) | Stub | — | — | — | Done | — |
+| **4** | Linear layer (MDS, branch number = 5, 128x128 rank) | Done | Done | Done | Done | Done | Done |
 | **5** | Full AES polynomial system (160 eq, 160 var) | Stub | — | — | — | — | — |
 | **6** | Jacobian rank via Hasse-Schmidt | Stub | — | — | — | — | — |
 | **7** | R_NL / B_A reductions | Stub | — | — | — | Done | Done |
@@ -44,6 +44,10 @@ Every conjecture is explicitly marked **UNPROVEN**. No claims beyond what the ma
 | Maximum linear bias = 16/256 = 2^-4 | **Proved** | Phase 3 (exhaustive LAT) |
 | Algebraic degree = 7 per output bit | **Proved** | Phase 3 (ANF/Mobius) |
 | Non-linearity = 112 (optimal) | **Proved** | Phase 3 |
+| MixColumns is MDS (all 69 submatrices invertible) | **Proved** | Phase 4 (exhaustive) |
+| Branch number = 5 (optimal for 4-byte) | **Proved** | Phase 4 |
+| Linear layer L=MC.SR is bijective, rank 128 | **Proved** | Phase 4 (128x128 GF(2) Gaussian) |
+| Round function bijective for fixed key | **Proved** | Phase 4 |
 | B_A is lossy (linearization kills information) | **Proved** | Phase 7 |
 | R_NL is injective (preserves full structure) | **Proved** | Phase 7 |
 | Biclique attack cost = 2^97 | **Proved** | Phase 9 |
@@ -103,12 +107,14 @@ aes-formal/
 │   └── src/
 │       ├── gf256.rs            Const-generated tables, O(1) all ops
 │       ├── sbox.rs             Full affine S-box + DDT/LAT analysis
+│       ├── linear_layer.rs     ShiftRows + MixColumns + MDS verification
 │       ├── aes128.rs           Complete AES-128 encrypt/decrypt
 │       ├── complexity.rs       Attack cost bounds
 │       └── lib.rs              Round function + R_NL evaluator
 ├── python/                 Exhaustive verification
 │   ├── phase2_gf256.py         Field axioms (all 65536 pairs)
 │   ├── phase3_sbox.py          FIPS-197 vectors + DDT + LAT + ANF
+│   ├── phase4_linear_layer.py  MDS submatrices + 128x128 rank + roundtrips
 │   └── aes_formal.py           Injectivity + distinguishability
 ├── smt/                    Z3 constraint encoding
 │   ├── SMTConstraints.smt2     R_NL as satisfiability problem
