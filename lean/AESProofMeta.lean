@@ -182,8 +182,12 @@ theorem gf2_rank_computable {n : ℕ} (M : GF2Mat n n) :
 /-- Phase 4b: full rank iff determinant nonzero over ZMod 2 -/
 theorem gf2_full_rank_iff_det_nonzero {n : ℕ} (M : GF2Mat n n) :
     M.rank = n ↔ M.det ≠ 0 := by
-  phase_sorry ProofPhase.MatrixRankGF2;
-    "rank = n ↔ det ≠ 0 for square matrices over a field — mathlib"
+  constructor
+  · intro h
+    rw [← Matrix.isUnit_iff_isUnit_det]
+    exact Matrix.rank_eq_card_of_rank_eq_finrank h
+  · intro h
+    exact Matrix.rank_eq_finrank_of_isUnit (Matrix.isUnit_iff_isUnit_det.mpr h)
 
 /-- Phase 4c: the 128×128 linearization of AES has full rank -/
 theorem aes_linearization_rank :

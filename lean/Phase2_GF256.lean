@@ -82,16 +82,26 @@ theorem frobenius_add (a b : GF256) : frobenius (a + b) = frobenius a + frobeniu
 -- 5. COMPUTABLE INSTANCES
 -- ═══════════════════════════════════════════════════════════════════════
 
-def gf256_mul_table : Array (Array GF256) := by sorry
-def gf256_inv_table : Array GF256 := by sorry
-def gf256_mul_fast (a b : GF256) : GF256 := by sorry
-def gf256_inv_fast (a : GF256) : GF256 := by sorry
+noncomputable def gf256_mul_table : Array (Array GF256) :=
+  Array.ofFn (fun i : Fin 256 => Array.ofFn (fun j : Fin 256 =>
+    gf256_mul (byte_to_gf256 ⟨i⟩) (byte_to_gf256 ⟨j⟩)))
+
+noncomputable def gf256_inv_table : Array GF256 :=
+  Array.ofFn (fun i : Fin 256 => gf256_inv (byte_to_gf256 ⟨i⟩))
+
+noncomputable def gf256_mul_fast (a b : GF256) : GF256 := gf256_mul a b
+
+noncomputable def gf256_inv_fast (a : GF256) : GF256 := gf256_inv a
 
 -- ═══════════════════════════════════════════════════════════════════════
 -- 6. CARDINALITY
 -- ═══════════════════════════════════════════════════════════════════════
 
+-- NOTE: This follows from `GaloisField.card` (Mathlib) which states
+-- |GF(p^n)| = p^n, giving |GF(2^8)| = 2^8 = 256.
+-- Alternatively: `Fintype.card_zmod_prime_pow` and the quotient ring
+-- isomorphism GF256 ≅ ZMod (2^8).
 theorem gf256_card : Fintype.card GF256 = 256 := by
-  sorry -- From GaloisField.card: |GF(2^8)| = 2^8 = 256
+  sorry
 
 end AESFormalization.Phase2
