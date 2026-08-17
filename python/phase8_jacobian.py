@@ -507,9 +507,16 @@ def fips197_self_test() -> bool:
         0x32, 0x43, 0xf6, 0xa8, 0x88, 0x5a, 0x30, 0x8d,
         0x31, 0x31, 0x98, 0xa2, 0xe0, 0x37, 0x07, 0x34,
     ]
+    # FIPS-197 state matrix after round 10 (displayed row-major in the spec):
+    #   39 02 dc 19
+    #   25 dc 11 6a
+    #   84 09 85 0b
+    #   1d fb 97 32
+    # Serialized column-major (AES byte order): col0 then col1 then col2 then col3
+    #   col0: 39 25 84 1d  |  col1: 02 dc 09 fb  |  col2: dc 11 85 97  |  col3: 19 6a 0b 32
     expected = [
-        0x39, 0x02, 0xdc, 0x19, 0x25, 0xdc, 0x11, 0x6a,
-        0x84, 0x09, 0x85, 0x0b, 0x1d, 0xfb, 0x97, 0x32,
+        0x39, 0x25, 0x84, 0x1d, 0x02, 0xdc, 0x09, 0xfb,
+        0xdc, 0x11, 0x85, 0x97, 0x19, 0x6a, 0x0b, 0x32,
     ]
     return aes_encrypt(key, plaintext) == expected
 
@@ -611,12 +618,12 @@ if __name__ == "__main__":
     print("  ALL PHASE 8 VERIFICATIONS PASSED")
     print()
     print("  Jacobian Rank Summary (FIPS-197 test key):")
-    print(f"    B_A  (zero S-box):  rank = {rank_ba}/128 → lossy, rank-deficient")
-    print(f"    R_NL (full AES):    rank = {rank_rnl}/128 → injective, full rank")
+    print(f"    B_A  (zero S-box):  rank = {rank_ba}/128  [lossy, rank-deficient]")
+    print(f"    R_NL (full AES):    rank = {rank_rnl}/128  [injective, full rank]")
     print()
     print("  Mathematical interpretation:")
-    print("    J_BA  = 0_{128×128}  ⟺  B_A destroys all plaintext information")
-    print(f"    J_RNL has rank {rank_rnl}     ⟺  R_NL preserves all 128 plaintext bits")
+    print("    J_BA  = 0_{128x128}  <=>  B_A destroys all plaintext information")
+    print(f"    J_RNL has rank {rank_rnl}     <=>  R_NL preserves all 128 plaintext bits")
     print()
     print("  This proves the Jacobian separation conjecture from Phase 7:")
     print("    rank(J_{B_A}) = 0  vs  rank(J_{R_NL}) = 128")
