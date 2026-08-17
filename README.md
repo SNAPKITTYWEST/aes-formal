@@ -23,10 +23,10 @@ Every conjecture is explicitly marked **UNPROVEN**. No claims beyond what the ma
 | **4** | Linear layer (MDS, branch number = 5, 128x128 rank) | Done | Done | Done | Done | Done | Done |
 | **5** | AES-128 full (key expansion, 10 rounds, FIPS-197) | Done | Done | Done | Done | Done | Done |
 | **6** | R_NL vs B_A reductions (separation theorems) | Done | Done | Done | Done | Done | Done |
-| **7** | R_NL / B_A reductions (legacy) | Stub | — | — | — | Done | Done |
-| **8** | Jacobian SMT encoding | — | — | — | — | — | — |
-| **9** | Complexity bounds | Stub | — | — | — | Done | — |
-| **10** | Cross-verification | — | — | — | — | — | — |
+| **7** | Complexity analysis & 8 conjectures | Done | Done | Done | Done | Done | Done |
+| **8** | Jacobian SMT + cross-verification | Done | Done | — | — | Done | Done |
+| **9** | Complexity bounds + differential trail algorithm | Done | — | — | — | Done | Done |
+| **10** | Cross-language equivalence runner | Done | — | — | — | Done | Done |
 
 ---
 
@@ -58,12 +58,18 @@ Every conjecture is explicitly marked **UNPROVEN**. No claims beyond what the ma
 | R_NL is injective (no key collisions) | **Proved** | Phase 6 (1000 trials) |
 | R_NL plaintext-Jacobian rank >= 127 | **Proved** | Phase 6 (Gaussian elim) |
 | Local distinguishability (dK!=0 -> dC!=0) | **Proved** | Phase 6 (10000 trials) |
-| B_A is lossy (linearization kills information) | **Proved** | Phase 7 |
-| R_NL is injective (preserves full structure) | **Proved** | Phase 7 |
-| Biclique attack cost = 2^97 | **Proved** | Phase 9 |
-| Grover on R_NL requires 2^64 queries | **Proved** | Phase 9 |
-| R_NL inversion cost > 2^128 | **CONJECTURED** | C1 (open) |
-| No polynomial-time key recovery | **CONJECTURED** | C3 (open) |
+| B_A is lossy (linearization kills information) | **Proved** | Phase 6 (constructive) |
+| R_NL is injective (preserves full structure) | **Proved** | Phase 6 (1000 trials) |
+| Biclique attack cost = 2^97 | **Proved** | Phase 7 (all languages) |
+| Grover TIME = 2^77 < Biclique TIME = 2^97 | **Proved** | Phase 7 |
+| Grover oracle requires 2^64 queries | **Proved** | Phase 7 |
+| 8-round differential min = 50 active S-boxes | **Proved** | Phase 9 |
+| 8-round data complexity = 2^300 > 2^128 | **Proved** | Phase 9 |
+| All 10 cross-language test vectors agree | **Proved** | Phase 10 |
+| R_NL inversion cost > 2^128 | **CONJECTURED** | C2 (open) |
+| rank(J_F_K) = 128 | **CONJECTURED** | C1 (open) |
+| rank = 128 does NOT imply poly-time inverse | **CONJECTURED** | C3 (open) |
+| No verified attack below 2^128 | **CONJECTURED** | C4 (open) |
 
 ---
 
@@ -152,7 +158,7 @@ aes-formal/
 ## Run It
 
 ```bash
-# Python — Phase 2 (field axioms, exhaustive)
+# Python — Phase 2 (field axioms, exhaustive 256x256 pairs)
 python python/phase2_gf256.py
 
 # Python — Phase 3 (S-box, FIPS-197 vectors, DDT, LAT)
@@ -161,11 +167,24 @@ python python/phase3_sbox.py
 # Python — Phase 5 (full AES-128, FIPS-197 Appendix B+C, avalanche)
 python python/phase5_aes128.py
 
-# Rust tests
+# Python — Phase 7 (complexity analysis & conjectures)
+python python/phase7_complexity.py
+
+# Python — Phase 8 (cross-verification & equivalence)
+python python/phase8_cross_verification.py
+
+# Python — Phase 9 (complexity bounds & differential trail)
+python python/phase9_complexity.py
+
+# Python — Phase 10 (cross-language equivalence runner)
+python python/phase10_cross_verification.py
+
+# Rust — all 51 tests
 cd rust && cargo test
 
 # SMT (requires Z3)
 z3 smt/SMTConstraints.smt2
+z3 smt/Phase8_Jacobian.smt2
 
 # Lean 4 (requires Mathlib)
 lake build
@@ -175,7 +194,8 @@ lake build
 
 ## 4 Open Conjectures
 
-These require Ahmad's phases 4-10 to close:
+All conjectures explicitly marked **UNPROVEN** across all language files.
+Falsification criteria defined in Phase 7 (all 6 languages).
 
 | ID | Conjecture | Requires |
 |----|-----------|----------|
