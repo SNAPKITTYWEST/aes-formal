@@ -21,7 +21,7 @@ Every conjecture is explicitly marked **UNPROVEN**. No claims beyond what the ma
 | **2** | GF(2^8) field (quotient, Frobenius, x^254 = x^-1) | Done | Done | Done | Done | Done | Done |
 | **3** | S-box polynomial (full affine transform, FIPS-197) | Done | Done | Done | Done | Done | Done |
 | **4** | Linear layer (MDS, branch number = 5, 128x128 rank) | Done | Done | Done | Done | Done | Done |
-| **5** | Full AES polynomial system (160 eq, 160 var) | Stub | — | — | — | — | — |
+| **5** | AES-128 full (key expansion, 10 rounds, FIPS-197) | Done | Done | Done | Done | Done | Done |
 | **6** | Jacobian rank via Hasse-Schmidt | Stub | — | — | — | — | — |
 | **7** | R_NL / B_A reductions | Stub | — | — | — | Done | Done |
 | **8** | Jacobian SMT encoding | — | — | — | — | — | — |
@@ -48,6 +48,11 @@ Every conjecture is explicitly marked **UNPROVEN**. No claims beyond what the ma
 | Branch number = 5 (optimal for 4-byte) | **Proved** | Phase 4 |
 | Linear layer L=MC.SR is bijective, rank 128 | **Proved** | Phase 4 (128x128 GF(2) Gaussian) |
 | Round function bijective for fixed key | **Proved** | Phase 4 |
+| Key expansion correct (FIPS-197 Appendix A) | **Proved** | Phase 5 (exhaustive) |
+| AES-128 encrypt matches FIPS-197 Appendix B | **Proved** | Phase 5 |
+| AES-128 encrypt matches FIPS-197 Appendix C.1 | **Proved** | Phase 5 |
+| Encrypt/decrypt are inverses | **Proved** | Phase 5 (100 patterns) |
+| Avalanche criterion (all 128 input bits) | **Proved** | Phase 5 |
 | B_A is lossy (linearization kills information) | **Proved** | Phase 7 |
 | R_NL is injective (preserves full structure) | **Proved** | Phase 7 |
 | Biclique attack cost = 2^97 | **Proved** | Phase 9 |
@@ -91,30 +96,35 @@ aes-formal/
 │   ├── AESProofMeta.lean        10-phase meta scaffold + dependency graph
 │   ├── Phase2_GF256.lean        GF(2^8) as quotient field
 │   ├── Phase3_SBox.lean         Full S-box with affine transform
-│   ├── Phase4_LinearLayer.lean  MDS + ShiftRows (stub)
+│   ├── Phase4_LinearLayer.lean  MDS + ShiftRows + branch number
+│   ├── Phase5_AES128.lean       Key expansion + 10 rounds + correctness
 │   └── Phase7_Reductions.lean   R_NL and B_A definitions
 ├── coq/                    Coq/MathComp
 │   ├── Phase2_GF256.v          Galois field + Frobenius
-│   └── Phase3_SBox.v           Affine matrix injectivity
+│   ├── Phase3_SBox.v           Affine matrix injectivity
+│   └── Phase5_AES128.v         Full AES-128 correctness
 ├── agda/                   Agda (--without-K)
 │   ├── AESFormalization.agda   Core module
 │   ├── Phase2_GF256.agda       Vec Bool 8 representation
-│   └── Phase3_SBox.agda        GF(2) matrix mul + affine
+│   ├── Phase3_SBox.agda        GF(2) matrix mul + affine
+│   └── Phase5_AES128.agda      Key expansion + round functions
 ├── isabelle/               Isabelle/HOL
 │   ├── Phase2_GF256.thy        Typedef + lift_definition
-│   └── Phase3_SBox.thy         Mat-vec mul + S-box def
+│   ├── Phase3_SBox.thy         Mat-vec mul + S-box def
+│   └── Phase5_AES128.thy       Full AES-128 encrypt/decrypt
 ├── rust/                   Executable reference (no_std)
 │   └── src/
 │       ├── gf256.rs            Const-generated tables, O(1) all ops
 │       ├── sbox.rs             Full affine S-box + DDT/LAT analysis
 │       ├── linear_layer.rs     ShiftRows + MixColumns + MDS verification
-│       ├── aes128.rs           Complete AES-128 encrypt/decrypt
+│       ├── aes128.rs           Complete AES-128 encrypt/decrypt + FIPS-197
 │       ├── complexity.rs       Attack cost bounds
-│       └── lib.rs              Round function + R_NL evaluator
+│       └── lib.rs              Library root + R_NL evaluator
 ├── python/                 Exhaustive verification
 │   ├── phase2_gf256.py         Field axioms (all 65536 pairs)
 │   ├── phase3_sbox.py          FIPS-197 vectors + DDT + LAT + ANF
 │   ├── phase4_linear_layer.py  MDS submatrices + 128x128 rank + roundtrips
+│   ├── phase5_aes128.py        Full AES-128 + FIPS-197 Appendix B/C tests
 │   └── aes_formal.py           Injectivity + distinguishability
 ├── smt/                    Z3 constraint encoding
 │   ├── SMTConstraints.smt2     R_NL as satisfiability problem
@@ -136,6 +146,9 @@ python python/phase2_gf256.py
 
 # Python — Phase 3 (S-box, FIPS-197 vectors, DDT, LAT)
 python python/phase3_sbox.py
+
+# Python — Phase 5 (full AES-128, FIPS-197 Appendix B+C, avalanche)
+python python/phase5_aes128.py
 
 # Rust tests
 cd rust && cargo test

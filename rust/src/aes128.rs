@@ -2,7 +2,8 @@
 // Copyright (C) 2026 Bel Esprit D'Accord Irrevocable Trust
 // Authors: Ahmad Ali Parr — Jessica Westerhoff
 
-use crate::gf256::{GF256, sbox, inv_sbox};
+use crate::gf256::GF256;
+use crate::sbox::{sbox_full as sbox, inv_sbox_full as inv_sbox};
 
 pub type State     = [[u8; 4]; 4];
 pub type RoundKeys = [[u8; 16]; 11];

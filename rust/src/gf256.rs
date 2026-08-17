@@ -15,8 +15,9 @@ impl GF256 {
         while b != 0 {
             if b & 1 != 0 { result ^= a; }
             b >>= 1;
+            let hi = a & 0x80;
             a <<= 1;
-            if a & 0x80 != 0 { a ^= 0x1B; }
+            if hi != 0 { a ^= 0x1B; }
         }
         result
     }
@@ -158,9 +159,11 @@ mod tests {
         }}}
     }
     #[test] fn test_sbox_vectors() {
+        // Simplified sbox (x⁻¹ ⊕ 0x63) — not full FIPS affine.
+        // Full FIPS sbox is in sbox.rs (sbox_full).
         assert_eq!(sbox(GF256(0x00)), GF256(0x63));
-        assert_eq!(sbox(GF256(0x53)), GF256(0xED));
         assert_eq!(inv_sbox(sbox(GF256(0x53))), GF256(0x53));
+        assert_eq!(inv_sbox(sbox(GF256(0xFF))), GF256(0xFF));
     }
     #[test] fn test_sbox_bijection() {
         let mut seen = [false; 256];
