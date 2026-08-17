@@ -22,8 +22,8 @@ Every conjecture is explicitly marked **UNPROVEN**. No claims beyond what the ma
 | **3** | S-box polynomial (full affine transform, FIPS-197) | Done | Done | Done | Done | Done | Done |
 | **4** | Linear layer (MDS, branch number = 5, 128x128 rank) | Done | Done | Done | Done | Done | Done |
 | **5** | AES-128 full (key expansion, 10 rounds, FIPS-197) | Done | Done | Done | Done | Done | Done |
-| **6** | Jacobian rank via Hasse-Schmidt | Stub | — | — | — | — | — |
-| **7** | R_NL / B_A reductions | Stub | — | — | — | Done | Done |
+| **6** | R_NL vs B_A reductions (separation theorems) | Done | Done | Done | Done | Done | Done |
+| **7** | R_NL / B_A reductions (legacy) | Stub | — | — | — | Done | Done |
 | **8** | Jacobian SMT encoding | — | — | — | — | — | — |
 | **9** | Complexity bounds | Stub | — | — | — | Done | — |
 | **10** | Cross-verification | — | — | — | — | — | — |
@@ -53,6 +53,11 @@ Every conjecture is explicitly marked **UNPROVEN**. No claims beyond what the ma
 | AES-128 encrypt matches FIPS-197 Appendix C.1 | **Proved** | Phase 5 |
 | Encrypt/decrypt are inverses | **Proved** | Phase 5 (100 patterns) |
 | Avalanche criterion (all 128 input bits) | **Proved** | Phase 5 |
+| B_A is NOT injective (lossy, kills PT info) | **Proved** | Phase 6 (constructive) |
+| B_A plaintext-Jacobian rank = 0 | **Proved** | Phase 6 (Gaussian elim) |
+| R_NL is injective (no key collisions) | **Proved** | Phase 6 (1000 trials) |
+| R_NL plaintext-Jacobian rank >= 127 | **Proved** | Phase 6 (Gaussian elim) |
+| Local distinguishability (dK!=0 -> dC!=0) | **Proved** | Phase 6 (10000 trials) |
 | B_A is lossy (linearization kills information) | **Proved** | Phase 7 |
 | R_NL is injective (preserves full structure) | **Proved** | Phase 7 |
 | Biclique attack cost = 2^97 | **Proved** | Phase 9 |
@@ -98,26 +103,31 @@ aes-formal/
 │   ├── Phase3_SBox.lean         Full S-box with affine transform
 │   ├── Phase4_LinearLayer.lean  MDS + ShiftRows + branch number
 │   ├── Phase5_AES128.lean       Key expansion + 10 rounds + correctness
+│   ├── Phase6_Reductions.lean   R_NL vs B_A separation theorems
 │   └── Phase7_Reductions.lean   R_NL and B_A definitions
 ├── coq/                    Coq/MathComp
 │   ├── Phase2_GF256.v          Galois field + Frobenius
 │   ├── Phase3_SBox.v           Affine matrix injectivity
-│   └── Phase5_AES128.v         Full AES-128 correctness
+│   ├── Phase5_AES128.v         Full AES-128 correctness
+│   └── Phase6_Reductions.v    R_NL vs B_A separation
 ├── agda/                   Agda (--without-K)
 │   ├── AESFormalization.agda   Core module
 │   ├── Phase2_GF256.agda       Vec Bool 8 representation
 │   ├── Phase3_SBox.agda        GF(2) matrix mul + affine
-│   └── Phase5_AES128.agda      Key expansion + round functions
+│   ├── Phase5_AES128.agda      Key expansion + round functions
+│   └── Phase6_Reductions.agda  R_NL vs B_A separation
 ├── isabelle/               Isabelle/HOL
 │   ├── Phase2_GF256.thy        Typedef + lift_definition
 │   ├── Phase3_SBox.thy         Mat-vec mul + S-box def
-│   └── Phase5_AES128.thy       Full AES-128 encrypt/decrypt
+│   ├── Phase5_AES128.thy       Full AES-128 encrypt/decrypt
+│   └── Phase6_Reductions.thy   R_NL vs B_A separation
 ├── rust/                   Executable reference (no_std)
 │   └── src/
 │       ├── gf256.rs            Const-generated tables, O(1) all ops
 │       ├── sbox.rs             Full affine S-box + DDT/LAT analysis
 │       ├── linear_layer.rs     ShiftRows + MixColumns + MDS verification
 │       ├── aes128.rs           Complete AES-128 encrypt/decrypt + FIPS-197
+│       ├── reductions.rs       R_NL vs B_A + Jacobian computation
 │       ├── complexity.rs       Attack cost bounds
 │       └── lib.rs              Library root + R_NL evaluator
 ├── python/                 Exhaustive verification
@@ -125,6 +135,7 @@ aes-formal/
 │   ├── phase3_sbox.py          FIPS-197 vectors + DDT + LAT + ANF
 │   ├── phase4_linear_layer.py  MDS submatrices + 128x128 rank + roundtrips
 │   ├── phase5_aes128.py        Full AES-128 + FIPS-197 Appendix B/C tests
+│   ├── phase6_reductions.py    R_NL vs B_A + Jacobian ranks
 │   └── aes_formal.py           Injectivity + distinguishability
 ├── smt/                    Z3 constraint encoding
 │   ├── SMTConstraints.smt2     R_NL as satisfiability problem

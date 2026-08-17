@@ -9,6 +9,7 @@ pub mod gf256;
 pub mod sbox;
 pub mod linear_layer;
 pub mod aes128;
+pub mod reductions;
 
 pub use gf256::GF256;
 pub use sbox::{sbox_full as sbox_fips, inv_sbox_full as inv_sbox_fips};
