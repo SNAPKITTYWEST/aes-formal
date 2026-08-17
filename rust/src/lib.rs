@@ -8,6 +8,7 @@ use core::array;
 
 pub mod gf256;
 pub mod sbox;
+pub mod linear_layer;
 
 /// GF(2^8) with AES polynomial x^8 + x^4 + x^3 + x + 1 (0x11B)
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
