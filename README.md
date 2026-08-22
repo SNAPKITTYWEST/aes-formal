@@ -27,6 +27,7 @@ Every conjecture is explicitly marked **UNPROVEN**. No claims beyond what the ma
 | **8** | Jacobian SMT + cross-verification | Done | Done | — | — | Done | Done |
 | **9** | Complexity bounds + differential trail algorithm | Done | — | — | — | Done | Done |
 | **10** | Cross-language equivalence runner | Done | — | — | — | Done | Done |
+| **11** | AES-256 14-round TTI margin arithmetic | Done | — | — | — | Done | Done |
 
 ---
 
@@ -65,6 +66,8 @@ Every conjecture is explicitly marked **UNPROVEN**. No claims beyond what the ma
 | Grover oracle requires 2^64 queries | **Proved** | Phase 7 |
 | 8-round differential min = 50 active S-boxes | **Proved** | Phase 9 |
 | 8-round data complexity = 2^300 > 2^128 | **Proved** | Phase 9 |
+| AES-256 14-round TTI margin = 86 active S-boxes, data exponent 2^516 | **Proved arithmetic** | Phase 11 |
+| TTI finite-codebook failure at round 4; AES-256 key-search failure at round 8 | **Proved arithmetic** | Phase 11 |
 | All 10 cross-language test vectors agree | **Proved** | Phase 10 |
 | R_NL inversion cost > 2^128 | **CONJECTURED** | C2 (open) |
 | rank(J_F_K) = 128 | **CONJECTURED** | C1 (open) |
@@ -110,7 +113,8 @@ aes-formal/
 │   ├── Phase4_LinearLayer.lean  MDS + ShiftRows + branch number
 │   ├── Phase5_AES128.lean       Key expansion + 10 rounds + correctness
 │   ├── Phase6_Reductions.lean   R_NL vs B_A separation theorems
-│   └── Phase7_Reductions.lean   R_NL and B_A definitions
+│   ├── Phase7_Reductions.lean   R_NL and B_A definitions
+│   └── Phase11_AES256_14RoundMargin.lean AES-256 14-round arithmetic margin
 ├── coq/                    Coq/MathComp
 │   ├── Phase2_GF256.v          Galois field + Frobenius
 │   ├── Phase3_SBox.v           Affine matrix injectivity
@@ -175,6 +179,9 @@ python python/phase8_cross_verification.py
 
 # Python — Phase 9 (complexity bounds & differential trail)
 python python/phase9_complexity.py
+
+# Python — Phase 11 (AES-256 14-round TTI margin arithmetic)
+python python/phase11_aes256_14round.py
 
 # Python — Phase 10 (cross-language equivalence runner)
 python python/phase10_cross_verification.py
