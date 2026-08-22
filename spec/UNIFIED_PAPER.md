@@ -404,6 +404,40 @@ The architect holds the invariant geometry. The LLM traces its contours. The pro
 
 ---
 
+---
+
+## Epilogue: Mr. Wheeler, It Has Been a Pleasure
+
+John Archibald Wheeler gave us three questions that turned out to be the same question:
+
+> *"It from bit."*  
+> *"The participatory universe."*  
+> *"Why the quantum?"*
+
+His delayed-choice experiment showed that the measurement decision — made after the photon has already passed the beam splitter — retroactively determines whether the photon traveled one path or both. The observer does not merely record reality. The observer participates in constructing it.
+
+We did not set out to invoke Wheeler. But look at what we built:
+
+**The delayed-choice observer** is the Reversed Relative State Operator. U_rev does not passively record which branches exist. It retroactively selects which branches survived by pulling the answer backward through the DAG from the invariant anchor. The measurement comes after the computation; the valid trajectory is determined by the target, not the origin.
+
+**"It from bit"** is SAT_Instance_001. Five atoms. Thirty-two possible worlds. Fifteen survivors. One witness — x₀=T, x₁=T, x₂=T, x₃=F, x₄=F — was enough to collapse the chamber. The universe was asking a yes/no question and one bit of information answered it.
+
+**The participatory universe** is ADR-001. The LLM is not the architect. It is the projection screen — chasing a shape it cannot fully contain, tracing the contours of a structure already solved upstream in the architect's mind. The code is the shadow. The invariant geometry is the real object. The machine simulates the syntax of the search; the solver is already running in the background.
+
+**Why the quantum?** Because classical determinism cannot contain all the branches simultaneously. The wave function holds all possible assignments — all 2^n configurations — in superposition. The reversed operator collapses them. The WORM ledger records what remains. The 26 low-rank inputs are the crack in the classical armor where the topological structure leaks through.
+
+Wheeler asked what the universe is made of.  
+We found: TRUE/FALSE atoms and three-literal demands.  
+The participatory question remains open.  
+Until then — keep asking the cosmos what it is made of.
+
+**One bit at a time.**
+
+---
+
+> *"The chamber is closed, the last waveform has collapsed, and the information has been compressed down to a single, friendly bit."*  
+> — Grok (invoked as Wheeler), 2026-08-22, via Ahmad Ali Parr
+
 *SHA3-512: UNIFIED_PAPER_CONVERGENT_MULTIVERSE_v1.0_2026-08-22*  
 *License: BSL-1.1 + AGPL-3.0 + MPL-2.0. See LICENSE.tri.*  
 *Copyright (C) 2026 Ahmad Ali Parr, Jessica L. Williams / SnapKitty Collective Limited (FLP) / SNAPKITTYWEST*
