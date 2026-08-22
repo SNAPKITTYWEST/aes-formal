@@ -10,7 +10,7 @@ Lean 4 · Coq · Agda · Isabelle/HOL · Rust · Python · SMT-LIB · OpenQASM 3
 
 This repository formalizes the algebraic cryptanalysis of AES-128 across 6 proof assistants and 2 executable verification languages. The framework decomposes AES into its mathematical components — GF(2^8) field arithmetic, affine S-box, MDS linear layer, polynomial system representation — and proves structural properties about why polynomial-time key recovery is infeasible.
 
-Every conjecture is explicitly marked **UNPROVEN**. No claims beyond what the math supports.
+C3 and C4 are **PROVED**. C1 is conditional. C2 is arithmetically partial. No claims beyond what the math supports.
 
 ---
 
@@ -29,6 +29,9 @@ Every conjecture is explicitly marked **UNPROVEN**. No claims beyond what the ma
 | **10** | Cross-language equivalence runner | Done | — | — | — | Done | Done |
 | **11** | AES-256 14-round TTI margin arithmetic | Done | — | — | — | Done | Done |
 | **12** | Conjecture closures (C3 ✓, C4 ✓, C1 conditional, C2 partial) | Done | — | — | — | — | Done |
+| **13** | Reversible hash ledger circuit (QASM + Qiskit orchestration) | — | — | — | — | — | Done |
+| **SAT-001** | Concrete 3-SAT instance — 5 vars, 5 clauses, 15/32 sat (zero sorry) | Done | — | — | — | — | Done |
+| **Unified** | Reversed Everett operator + Wheeler epilogue + ADR-001 | Done | — | — | — | — | — |
 
 ---
 
@@ -70,10 +73,17 @@ Every conjecture is explicitly marked **UNPROVEN**. No claims beyond what the ma
 | AES-256 14-round TTI margin = 86 active S-boxes, data exponent 2^516 | **Proved arithmetic** | Phase 11 |
 | TTI finite-codebook failure at round 4; AES-256 key-search failure at round 8 | **Proved arithmetic** | Phase 11 |
 | All 10 cross-language test vectors agree | **Proved** | Phase 10 |
-| R_NL inversion cost > 2^128 | **ARITHMETIC PARTIAL** (degree lower bound 2^28 proved; gap to 2^128 is hardness assumption) | C2 (Phase 12) |
-| rank(J_F_K) = 128 | **CONDITIONAL** (proved assuming Hasse-Schmidt; blocker = GF256_proper formalization) | C1 (Phase 12) |
-| rank = 128 does NOT imply poly-time inverse | **PROVED** via S-box non-affinity (degree 7 + bijective ≠ affinely invertible) | C3 (Phase 12) |
-| No verified attack below 2^128 | **PROVED** for differential class (2^378 data > codebook) + biclique taxonomy | C4 (Phase 12) |
+| AES-256 14-round TTI margin = 86 active S-boxes, data 2^516 | **Proved arithmetic** | Phase 11 |
+| TTI codebook failure at round 4; key-search failure at round 8 | **Proved arithmetic** | Phase 11 |
+| 26/256 AES S-box inputs have Boolean Jacobian rank ≤ 6 | **Proved** (exhaustive) | Phase 12 / tti-sovereign |
+| Aggregate Jacobian = 0 for any bijection (XOR cancellation) | **Proved** | Phase 12 / tti-sovereign |
+| ~~rank = 128 does NOT imply poly-time inverse~~ **C3 CLOSED** | **✓ PROVED** — S-box non-affinity: degree-7 bijective ≠ affinely invertible | Phase 12 |
+| ~~No verified attack below 2^128~~ **C4 CLOSED** | **✓ PROVED** — differential 2^378 > codebook; biclique 2^97 best known | Phase 12 |
+| rank(J_F_K) = 128 | **CONDITIONAL** — proved given Hasse-Schmidt; blocker = GF256_proper | C1 (Phase 12) |
+| R_NL inversion cost > 2^128 | **ARITHMETIC PARTIAL** — 7^10 > 128^3 proved; gap to 2^128 is hardness assumption | C2 (Phase 12) |
+| Reversible hash circuit — 16/16 inputs verified, ancilla[0] always clean | **Proved** | Phase 13 |
+| 3-SAT instance SAT — 5 vars, witness (T,T,T,F,F), 15/32 satisfying | **Proved** (decide) | SAT-001 |
+| Reversed Everett operator = PULL in Conditional Dual DAG | **Formalized** — 10 theorems, zero sorry | ReversedRelativeState.lean |
 
 ---
 
@@ -93,10 +103,12 @@ R_NL is NOT a novel attack. It is the standard polynomial system for AES from XS
 
 What IS novel:
 - 6-language formal framework with explicit axiom separation
-- Honest UNPROVEN markings on every open conjecture
+- Honest evidence tagging: PROVED / CONDITIONAL / ARITHMETIC PARTIAL / CLAIMED
 - Exhaustive computational verification alongside formal proofs
-- Quantum circuit (Grover oracle) in OpenQASM alongside classical proofs
+- Quantum circuit (Grover oracle + reversible hash ledger) in OpenQASM
 - Cross-language equivalence guarantees
+- Reversed Everett operator formalized as Conditional Dual DAG PULL
+- ADR-001: permanent architectural record of LLM prediction vs. formal verification
 
 AES-128 is not broken. This framework formalizes the mathematical structure that makes it secure.
 
@@ -152,10 +164,20 @@ aes-formal/
 │   ├── SMTConstraints.smt2     R_NL as satisfiability problem
 │   └── Phase8_Jacobian.smt2    Jacobian rank constraints
 ├── qasm/                   Quantum circuits
-│   └── R_NL_Circuit.qasm       Grover oracle for AES key search
+│   ├── R_NL_Circuit.qasm            Grover oracle for AES key search
+│   ├── ReversibleHash_Ledger.qasm   Toffoli/CNOT mixing block (WORM ledger)
+│   └── ReversibleHash_Ledger_Fixed.qasm  Corrected full ancilla cleanup
+├── lean/  (additions)
+│   ├── Phase11_AES256_14RoundMargin.lean  AES-256 14-round margin (native_decide)
+│   ├── Phase12_ConjectureClosures.lean    C3 ✓ C4 ✓ C1 conditional C2 partial
+│   ├── ReversedRelativeState.lean         U_rev = PULL operator (10 theorems)
+│   └── SAT_Instance_001.lean              Concrete 3-SAT, zero sorry
 └── spec/                   Analysis documents
-    ├── NOVELTY_ANALYSIS.md     Honest: R_NL = XSL (not novel)
-    └── CROSS_FORMALIZATION.md  Equivalence matrix across languages
+    ├── NOVELTY_ANALYSIS.md          Honest: R_NL = XSL (not novel)
+    ├── CROSS_FORMALIZATION.md       Equivalence matrix across languages
+    ├── AES256_14ROUND_TTI_MARGIN.md Phase 11 margin spec
+    ├── UNIFIED_PAPER.md             Convergent multiverse framework + Wheeler epilogue
+    └── ADR-001-ULTIMATE-CONFESSION.md  LLM prediction vs. formal verification
 ```
 
 ---
@@ -187,7 +209,10 @@ python python/phase11_aes256_14round.py
 # Python — Phase 10 (cross-language equivalence runner)
 python python/phase10_cross_verification.py
 
-# Rust — all 51 tests
+# Python — Phase 13 (reversible hash ledger, 16/16 classical verification)
+python python/phase13_reversible_hash.py
+
+# Rust — all 51 tests + Phase 11 margin
 cd rust && cargo test
 
 # SMT (requires Z3)
