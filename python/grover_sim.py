@@ -2,6 +2,21 @@
 grover_sim.py
 Classical simulation of Grover's algorithm on the SAT-001 instance.
 
+REPRODUCIBILITY (Nova Parr fix 2026-08-26):
+  Seed: 0x4b565498 — must appear in paper appendix.
+  import numpy as np; np.random.seed(0x4b565498)
+"""
+
+import numpy as np
+import random
+
+# Fix 3 (Nova): lock all randomness — same seed = same attack
+AUDIT_SEED = 0x4b565498
+np.random.seed(AUDIT_SEED)
+random.seed(AUDIT_SEED)
+
+"""
+
 5 qubits, N=32, 1 marked state: |11100⟩ = 0b11100 = 28
 Optimal iterations: floor(π/4 * √N) ≈ 4
 

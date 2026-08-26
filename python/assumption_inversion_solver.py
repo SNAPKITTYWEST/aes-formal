@@ -2,6 +2,18 @@
 assumption_inversion_solver.py
 Assumption-Inversion SAT solver — conflict-driven collapse.
 
+REPRODUCIBILITY (Nova Parr fix 2026-08-26): Seed 0x4b565498
+"""
+
+import numpy as np
+import random
+
+AUDIT_SEED = 0x4b565498
+np.random.seed(AUDIT_SEED)
+random.seed(AUDIT_SEED)
+
+"""
+
 Algorithm:
   1. Assume All True (base assumption A)
   2. Evaluate all clauses; find first conflict (¬A)
