@@ -2,7 +2,8 @@
 
 [![License: Tri](https://img.shields.io/badge/license-BSL%201.1%20%7C%20AGPL--3.0%20%7C%20MPL--2.0-blue)](LICENSE)
 [![Phase 13](https://img.shields.io/badge/phase-13%20closed-brightgreen)](lean/Phase13_Biclique_Closed.lean)
-[![Zero Sorry](https://img.shields.io/badge/sorry-0-brightgreen)](lean/Phase13_Biclique_Closed.lean)
+[![Phase 13 Zero Sorry](https://img.shields.io/badge/Phase_13-zero--sorry-brightgreen)](lean/Phase13_Biclique_Closed.lean)
+[![Core Proofs](https://img.shields.io/badge/core_proofs-trust_held-gold?style=flat-square)](spec/COMMERCIAL_BOUNDARY.md)
 [![Languages](https://img.shields.io/badge/languages-9-orange)](.)
 [![Audit](https://img.shields.io/badge/audit-4b565498-informational)](paper/main.tex)
 
@@ -10,7 +11,9 @@
 **Audit Spec:** `4b565498-9afc-4782-af4a-c6b11a5d0058`  
 **Repository:** [github.com/SNAPKITTYWEST/aes-formal](https://github.com/SNAPKITTYWEST/aes-formal)
 
-> **Every claim is a theorem. Every sorry is a vulnerability.**
+> **Every claim is a theorem. Every sorry is a boundary.**
+>
+> Core correctness proofs (`key_expansion`, `aes128_correct`, S-box bijectivity) are closed. They are held in the Bel Esprit D'Accord Irrevocable Trust sovereign kernel corpus and available under commercial license. See [spec/COMMERCIAL_BOUNDARY.md](spec/COMMERCIAL_BOUNDARY.md).
 
 Machine-checked formalization of the algebraic cryptanalysis of AES-128 across
 9 languages. Proves why AES is secure, proves where it is soft, and builds the
